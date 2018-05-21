@@ -1,6 +1,5 @@
 package eu.reisihub.soft.watermarking
 
-import java.io.Console
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
@@ -37,6 +36,9 @@ fun main(args: Array<String>) {
         }.let {
             println("Watermark image scale:")
             it.copy(watermarkScale = console.readPositiveDouble())
+        }.let {
+            println("Watermark image path:")
+            it.copy(nWatermarkImagePath = console.readPath())
         }.also { settings ->
             println("Store settings to:")
             console.readPath().let {

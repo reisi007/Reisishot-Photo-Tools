@@ -3,6 +3,8 @@ package eu.reisihub.soft.instaResize
 import com.xenomachina.argparser.*
 import eu.reisihub.shot.AspectRatio
 import eu.reisihub.shot.aspectRatio
+import eu.reisihub.shot.ifAbsent
+import eu.reisihub.shot.readImage
 import java.awt.Color
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
@@ -11,7 +13,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
-import java.util.*
 import java.util.concurrent.Executors
 import javax.imageio.ImageIO
 import kotlin.streams.toList
@@ -94,7 +95,7 @@ object Main {
                             it to executorService.submit(
                                 getResizeJob(
                                     it,
-                                    targetFolder!!,
+                                    targetFolder,
                                     finalRatio,
                                     color
                                 )
@@ -126,9 +127,6 @@ object Main {
         instagramSupportedRatios.endInclusive < sourceRatio -> instagramSupportedRatios.endInclusive
         else -> sourceRatio
     }
-
-
-    private fun Path.readImage(): BufferedImage = ImageIO.read(Files.newInputStream(this, StandardOpenOption.READ))
 
     private fun getResizeJob(
         fromImage: Path,
@@ -187,10 +185,5 @@ object Main {
                 }
             }
         }
-    }
-
-    fun Optional<*>.ifAbsent(block: () -> Unit) {
-        if (!isPresent)
-            block()
     }
 }

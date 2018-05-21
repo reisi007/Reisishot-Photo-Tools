@@ -2,6 +2,7 @@ package eu.reisihub.soft.watermarking
 
 import com.google.gson.*
 import com.google.gson.annotations.SerializedName
+import eu.reisihub.shot.withChild
 import java.lang.reflect.Type
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -31,6 +32,8 @@ data class WatermarkSettings(
     private var nSrcPath: Path? = null,
     @SerializedName("targetPath")
     private var nTargetPath: Path? = null,
+    @SerializedName("watermarkImagePath")
+    private var nWatermarkImagePath: Path? = null,
     val imageSize: Int = 0,
     val watermarkScale: Double = 1.0,
     val watermarkX: Int = 0,
@@ -40,7 +43,10 @@ data class WatermarkSettings(
     val srcPath
         get() = nSrcPath!!
     val targetPath
-        get() = srcPath.resolve("wout")!!
+        get() = srcPath withChild "wout"
+
+    val watermarkImagePath
+        get() = nWatermarkImagePath!!
 
     fun store(file: Path) {
         Files.newBufferedWriter(
