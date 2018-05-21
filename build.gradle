@@ -29,7 +29,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-test-junit
     testCompile group: 'org.jetbrains.kotlin', name: 'kotlin-test-junit', version: kotlin_version
 
-    compile 'com.xenomachina:kotlin-argparser:2.0.3'
+    compile 'com.xenomachina:kotlin-argparser:2.0.7'
 }
 
 compileKotlin {

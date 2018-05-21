@@ -31,6 +31,10 @@ data class AspectRatio(val widthAspect: Int, val heightAspect: Int) : Comparable
         return asFloat.hashCode()
     }
 
+    override fun toString(): String {
+        return "$widthAspect:$heightAspect"
+    }
+
     operator fun rangeTo(other: AspectRatio): ClosedRange<AspectRatio> =
         (if (this < other) {
             this to other
