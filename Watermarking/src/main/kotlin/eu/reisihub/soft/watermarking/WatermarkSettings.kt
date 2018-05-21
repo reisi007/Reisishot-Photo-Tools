@@ -38,6 +38,7 @@ data class WatermarkSettings(
     val watermarkScale: Double = 1.0,
     val watermarkX: Int = 0,
     val watermarkY: Int = 0,
+    val watermarkTransparency: Float = 0.55f,
     val orientation: Orientation = Orientation.MIDDLE_CENTER
 ) {
     val srcPath
