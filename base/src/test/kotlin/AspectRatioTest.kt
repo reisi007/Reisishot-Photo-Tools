@@ -1,4 +1,5 @@
-import eu.reisihub.shot.instaResize.AspectRatio
+package eu.reisihub.shot
+
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

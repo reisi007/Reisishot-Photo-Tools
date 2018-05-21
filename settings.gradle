@@ -1,2 +1,5 @@
-rootProject.name = 'InstaResize'
+rootProject.name = 'Reisishot_Photo_Tools'
+include 'InstaResize'
+include 'Watermarking'
+include 'base'
 

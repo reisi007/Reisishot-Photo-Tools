@@ -1,4 +1,4 @@
-package eu.reisihub.shot.instaResize
+package eu.reisihub.shot
 
 import java.awt.image.BufferedImage
 
