@@ -39,6 +39,12 @@ fun main(args: Array<String>) {
         }.let {
             println("Watermark image path:")
             it.copy(nWatermarkImagePath = console.readPath())
+        }.let {
+            println("Watermark image transparency [0..1]:")
+            var f = -1.0f
+            while (f !in 0..1)
+                f = console.nextFloat()
+            it.copy(watermarkTransparency = f)
         }.also { settings ->
             println("Store settings to:")
             console.readPath().let {
