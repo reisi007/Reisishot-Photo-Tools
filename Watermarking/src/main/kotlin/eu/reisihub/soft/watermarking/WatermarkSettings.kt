@@ -23,9 +23,6 @@ private val JSON by lazy(
         }
     )::create)
 
-enum class Orientation {
-    TOP_LEFT, TOP_CENTER, TOP_RIGHT, MIDDLE_LEFT, MIDDLE_CENTER, MIDDLE_RIGHT, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT
-}
 
 data class WatermarkSettings(
     @SerializedName("srcPath")
@@ -39,7 +36,7 @@ data class WatermarkSettings(
     val watermarkX: Int = 0,
     val watermarkY: Int = 0,
     val watermarkTransparency: Float = 0.55f,
-    val orientation: Orientation = Orientation.MIDDLE_CENTER
+    val orientation: IWatermark.Orientation = IWatermark.Orientation.MIDDLE_CENTER
 ) {
     val srcPath
         get() = nSrcPath!!

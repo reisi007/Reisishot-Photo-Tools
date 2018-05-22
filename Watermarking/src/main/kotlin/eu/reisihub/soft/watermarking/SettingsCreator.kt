@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
         }.let {
             println("Watermark orientation (input number):")
             println()
-            val possibleItems = Orientation.values()
+            val possibleItems = IWatermark.Orientation.values()
             possibleItems.forEachIndexed { i, orientation ->
                 println("$i: $orientation")
             }

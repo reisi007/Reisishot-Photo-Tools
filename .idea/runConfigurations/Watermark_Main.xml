@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Watermark Main" type="JetRunConfigurationType" factoryName="Kotlin" singleton="true">
     <module name="Watermarking_main" />
-    <option name="VM_PARAMETERS" value="-ea -Xss1024m -Xms256m -Xmx2g" />
+    <option name="VM_PARAMETERS" value="-ea -Xss1024m -Xms256m -Xmx4g" />
     <option name="PROGRAM_PARAMETERS" value="--settings &quot;D:\Desktop\test\wmsettings.json&quot;" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />
