@@ -3,7 +3,6 @@ package eu.reisihub.soft.watermarking
 import com.xenomachina.argparser.ArgParser
 import eu.reisihub.shot.measured
 import eu.reisihub.shot.readImage
-import eu.reisihub.shot.toRoundedInt
 import net.coobird.thumbnailator.Thumbnails
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -42,8 +41,7 @@ object Main {
                         }.let { watermark ->
                             println("Starting watermarking!")
                             val executorService =
-                                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors().let { (1.75 * it).toRoundedInt() }
-                                )!!
+                                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
                             try {
                                 images.map {
                                     WatermarkUtils.create(
