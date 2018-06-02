@@ -41,7 +41,7 @@ data class WatermarkSettings(
     val srcPath
         get() = nSrcPath!!
     val targetPath
-        get() = srcPath withChild "wout"
+        get() = nTargetPath ?: srcPath withChild "wout"
 
     val watermarkImagePath
         get() = nWatermarkImagePath!!

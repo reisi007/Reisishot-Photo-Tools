@@ -1,5 +1,6 @@
 package eu.reisihub.shot
 
+import net.coobird.thumbnailator.Thumbnails
 import java.awt.image.BufferedImage
 import java.nio.file.Path
 import java.util.*
@@ -29,3 +30,5 @@ fun measured(block: () -> Unit): Long {
     val end = System.currentTimeMillis()
     return end - start
 }
+
+fun BufferedImage.storeJPG(p: Path) = Thumbnails.of(this).scale(1.0).outputQuality(1.0).toFile(p.toFile())

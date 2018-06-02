@@ -1,10 +1,7 @@
 package eu.reisihub.soft.instaResize
 
 import com.xenomachina.argparser.*
-import eu.reisihub.shot.AspectRatio
-import eu.reisihub.shot.aspectRatio
-import eu.reisihub.shot.ifAbsent
-import eu.reisihub.shot.readImage
+import eu.reisihub.shot.*
 import java.awt.Color
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
@@ -12,9 +9,7 @@ import java.io.StringWriter
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.nio.file.StandardOpenOption
 import java.util.concurrent.Executors
-import javax.imageio.ImageIO
 import kotlin.streams.toList
 
 object Main {
@@ -171,15 +166,7 @@ object Main {
                             )
                         }
                         toFolder.resolve(fromImage.fileName).also { outFileName ->
-                            ImageIO.write(
-                                targetImage,
-                                "JPEG",
-                                Files.newOutputStream(
-                                    outFileName,
-                                    StandardOpenOption.TRUNCATE_EXISTING,
-                                    StandardOpenOption.CREATE
-                                )
-                            )
+                            targetImage.storeJPG(outFileName)
                         }
                     }
                 }

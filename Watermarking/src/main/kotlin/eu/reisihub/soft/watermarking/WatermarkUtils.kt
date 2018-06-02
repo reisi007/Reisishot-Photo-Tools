@@ -1,6 +1,7 @@
 package eu.reisihub.soft.watermarking
 
 import eu.reisihub.shot.readImage
+import eu.reisihub.shot.storeJPG
 import eu.reisihub.shot.withChild
 import net.coobird.thumbnailator.Thumbnails
 import java.nio.file.Path
@@ -26,7 +27,7 @@ object WatermarkUtils {
             it
         }.let { watermarkedImage ->
             (outFolder withChild imagePath.fileName).apply {
-                Thumbnails.of(watermarkedImage).scale(1.0).outputQuality(1.0).toFile(this.toFile())
+                watermarkedImage.storeJPG(this)
             }
         }
     }
