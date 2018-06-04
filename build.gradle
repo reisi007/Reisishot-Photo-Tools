@@ -3,12 +3,17 @@ buildscript {
 
     repositories {
         mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
     }
 }
 
 group 'eu.reisihub.soft.photoTools'
 version '1.0-SNAPSHOT'
 
+allprojects {
+    apply plugin: 'com.github.johnrengelman.shadow'
+}

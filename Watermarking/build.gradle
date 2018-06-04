@@ -1,5 +1,6 @@
 plugins {
     id 'kotlin'
+    id 'application'
 }
 
 group 'eu.reisihub.soft.photoTools'
@@ -11,6 +12,9 @@ repositories {
         url 'https://dl.bintray.com/xenomachina/maven/'
     }
 }
+
+
+mainClassName = 'eu.reisihub.soft.watermarking.Main'
 
 dependencies {
     compile project(':base')

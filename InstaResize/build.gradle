@@ -13,6 +13,9 @@ group 'eu.reisihub.soft.photoTools'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'kotlin'
+apply plugin: 'application'
+
+mainClassName = 'eu.reisihub.soft.instaResize.Main'
 
 repositories {
     mavenCentral()

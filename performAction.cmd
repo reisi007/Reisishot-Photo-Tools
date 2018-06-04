@@ -1,0 +1,2 @@
+java -ea -Xss1024m -Xms256m -Xmx4g -jar ./Watermarking/build/libs/Watermarking-1.0-SNAPSHOT-all.jar --settings "D:\_Files\Dropbox\ReisiShot\wmsettings.json"
+java -ea -Xss1024m -Xms256m -Xmx2g -jar ./InstaResize/build/libs/InstaResize-1.0-SNAPSHOT-all.jar --src "D:\Desktop\out" -c BLACK

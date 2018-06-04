@@ -1,7 +1,11 @@
 .gradle
-out/
-build/
+**/out/
 /.idea/**
 !/.idea/runConfigurations/
 !/.idea/runConfigurations/*.xml
 *.iml
+!**/build
+base/build
+**/build/**
+!**/build/libs
+!**/build/libs/*-all.jar
