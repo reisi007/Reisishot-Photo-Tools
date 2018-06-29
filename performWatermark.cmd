@@ -1,0 +1,1 @@
+java -ea -Xss1024m -Xms256m -Xmx8g -jar ./Watermarking/build/libs/Watermarking-1.0-SNAPSHOT-all.jar --settings "D:\_Files\Dropbox\ReisiShot\wmsettings.json"
