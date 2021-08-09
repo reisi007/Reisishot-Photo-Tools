@@ -4,7 +4,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
 
-fun main(args: Array<String>) {
+fun main() {
     Scanner(System.`in`).let { console ->
         WatermarkSettings().let {
             println("Images source folder:")
@@ -41,8 +41,8 @@ fun main(args: Array<String>) {
             it.copy(nWatermarkImagePath = console.readPath())
         }.let {
             println("Watermark image transparency [0..1]:")
-            var f = -1.0f
-            while (f !in 0..1)
+            var f: Float = -1.0f
+            while (f !in 0f..1f)
                 f = console.nextFloat()
             it.copy(watermarkTransparency = f)
         }.also { settings ->

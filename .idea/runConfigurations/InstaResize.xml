@@ -1,15 +1,12 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="InstaResize" type="JetRunConfigurationType" factoryName="Kotlin" singleton="true">
-    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+  <configuration default="false" name="InstaResize" type="JetRunConfigurationType" singleton="true">
     <option name="MAIN_CLASS_NAME" value="eu.reisihub.soft.instaResize.Main" />
-    <option name="VM_PARAMETERS" value="-ea -Xss1024m -Xms256m -Xmx2g" />
-    <option name="PROGRAM_PARAMETERS" value="--src &quot;D:\Desktop\out&quot; -c BLACK" />
-    <option name="WORKING_DIRECTORY" value="" />
-    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-    <option name="ALTERNATIVE_JRE_PATH" />
-    <option name="PASS_PARENT_ENVS" value="true" />
-    <module name="InstaResize_main" />
-    <envs />
-    <method />
+    <module name="Reisishot_Photo_Tools.InstaResize.main" />
+    <option name="PROGRAM_PARAMETERS" value="--src &quot;C:\Users\flori\Desktop\in&quot; --out &quot;C:\Users\flori\Desktop\out&quot; -c BLACK" />
+    <shortenClasspath name="NONE" />
+    <option name="VM_PARAMETERS" value="-ea -Xmx16g" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
   </configuration>
 </component>

@@ -9,7 +9,7 @@ import java.nio.file.Paths
 import java.util.concurrent.Executors
 import kotlin.streams.toList
 
-private class Args(private val argParser: ArgParser) {
+private class Args(argParser: ArgParser) {
     val settings by argParser.storing(
         "-f", "-s", "--file", "--settings", "-i", "--input",
         help = "Helper file", argName = "SETTINGS_FILE_JSON"

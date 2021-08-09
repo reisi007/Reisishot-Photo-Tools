@@ -2,19 +2,20 @@
   <configuration default="false" name="Reisishot-Photo-Tools [shadowJar]" type="GradleRunConfiguration" factoryName="Gradle" singleton="true">
     <ExternalSystemSettings>
       <option name="executionName" />
-      <option name="externalProjectPath" value="$PROJECT_DIR$" />
+      <option name="externalProjectPath" value="$PROJECT_DIR$/InstaResize" />
       <option name="externalSystemIdString" value="GRADLE" />
-      <option name="scriptParameters" value="" />
+      <option name="scriptParameters" value="shadowJar" />
       <option name="taskDescriptions">
         <list />
       </option>
       <option name="taskNames">
-        <list>
-          <option value="shadowJar" />
-        </list>
+        <list />
       </option>
-      <option name="vmOptions" value="" />
+      <option name="vmOptions" />
     </ExternalSystemSettings>
-    <method />
+    <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+    <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+    <DebugAllEnabled>false</DebugAllEnabled>
+    <method v="2" />
   </configuration>
 </component>

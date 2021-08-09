@@ -1,19 +1,28 @@
 buildscript {
-    ext.kotlin_version = '1.3.11'
+    ext.kotlin_version = '1.5.21'
 
     repositories {
         mavenCentral()
-        jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+        classpath "gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0"
     }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+plugins {
+    id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
 group 'eu.reisihub.soft.photoTools'
 version '1.0-SNAPSHOT'
 
-allprojects {
-    apply plugin: 'com.github.johnrengelman.shadow'
+subprojects {
+    apply plugin: "com.github.johnrengelman.shadow"
 }

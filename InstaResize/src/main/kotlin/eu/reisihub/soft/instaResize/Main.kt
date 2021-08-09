@@ -48,7 +48,7 @@ object Main {
             argName = "COLOR"
         ) {
             try {
-                (Color::class.java.getField(this.toUpperCase()).get(null) as? Color)!!
+                (Color::class.java.getField(this.uppercase()).get(null) as? Color)!!
             } catch (e: NoSuchFieldException) {
                 println("Color not found, falling back to BLACK")
                 Color.BLACK
