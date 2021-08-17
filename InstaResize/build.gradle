@@ -1,33 +1,21 @@
-buildscript {
-    ext.kotlin_version = '1.5.21'
-
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
+plugins {
+    id 'kotlin'
+    id 'application'
 }
 
 group 'eu.reisihub.soft.photoTools'
 version '1.0-SNAPSHOT'
 
-
-apply plugin: 'kotlin'
-apply plugin: 'application'
-
-mainClassName = 'eu.reisihub.soft.instaResize.Main'
-
 repositories {
     mavenCentral()
 }
 
+mainClassName = 'eu.reisihub.soft.instaresize.Main'
+
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    api project(':base')
 
     implementation 'com.xenomachina:kotlin-argparser:2.0.7'
-
-    api project(':base')
 }
 
 compileKotlin {

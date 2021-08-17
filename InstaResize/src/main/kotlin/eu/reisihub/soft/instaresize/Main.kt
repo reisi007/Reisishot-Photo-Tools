@@ -1,8 +1,11 @@
-package eu.reisihub.soft.instaResize
+package eu.reisihub.soft.instaresize
 
 import com.xenomachina.argparser.*
 import eu.reisihub.shot.*
+import java.awt.AlphaComposite
 import java.awt.Color
+import java.awt.Composite
+import java.awt.Graphics2D
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
 import java.io.StringWriter
@@ -10,6 +13,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.Executors
+import kotlin.math.max
 import kotlin.streams.toList
 
 object Main {
@@ -57,7 +61,22 @@ object Main {
                 Color.BLACK
             }
         }
+
+        val imageBackgroundFill: Float by argParser.storing(
+            "-f",
+            "--fill",
+            help = "If image should also be shown as background fill (value is transparency)",
+            argName = "IMAGE_BG_FILL"
+        ) {
+            val toFloat = toFloat()
+            when {
+                toFloat < 0 -> 0f
+                toFloat > 1 -> 1f
+                else -> toFloat
+            }
+        }
     }
+
 
     val executorService =
         Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
@@ -92,7 +111,8 @@ object Main {
                                     it,
                                     targetFolder,
                                     finalRatio,
-                                    color
+                                    color,
+                                    imageBackgroundFill
                                 )
                             )
                         }
@@ -123,16 +143,24 @@ object Main {
         else -> sourceRatio
     }
 
+    private fun Graphics2D.withComposite(newComposite: Composite, action: (Graphics2D) -> Unit) {
+        val old = composite;
+        composite = newComposite
+        action(this)
+        composite = old
+    }
+
     private fun getResizeJob(
         fromImage: Path,
         toFolder: Path,
         targetAspectRatio: AspectRatio,
-        bgColor: Color
+        bgColor: Color,
+        imageBackgroundFill: Float
     ): () -> Path = {
         fromImage.readImage().let { image ->
             image.aspectRatio.let { imageRatio ->
                 when {
-                // increase width
+                    // increase width
                     imageRatio < targetAspectRatio -> {
                         (imageRatio.heightAspect.toDouble() / targetAspectRatio.heightAspect * targetAspectRatio.widthAspect).let { proposedWidthAspect ->
                             val desiredWidth =
@@ -141,7 +169,7 @@ object Main {
                         }
 
                     }
-                // increase height
+                    // increase height
                     imageRatio > targetAspectRatio -> {
                         (imageRatio.widthAspect.toDouble() / targetAspectRatio.widthAspect * targetAspectRatio.heightAspect).let { proposedHeightAspect ->
                             val desiredHeight =
@@ -152,16 +180,51 @@ object Main {
                     else -> imageRatio.widthAspect to imageRatio.heightAspect
                 }.let { (desiredWidth, desiredHeight) ->
                     //Desired values are >= current values
-                    val xOffset = (desiredWidth - imageRatio.widthAspect) / 2
-                    val yOffset = (desiredHeight - imageRatio.heightAspect) / 2
-                    BufferedImage(desiredWidth, desiredHeight, BufferedImage.TYPE_INT_RGB).let { targetImage ->
+                    val xOffset = (desiredWidth - imageRatio.widthAspect) / 2.toFloat()
+                    val yOffset = (desiredHeight - imageRatio.heightAspect) / 2.toFloat()
+
+                    val widthScaleFactor = desiredWidth / imageRatio.widthAspect.toFloat()
+                    val heightScaleFactor = desiredHeight / imageRatio.heightAspect.toFloat()
+                    val scaleFactor = max(widthScaleFactor, heightScaleFactor)
+
+                    BufferedImage(desiredWidth, desiredHeight, BufferedImage.TYPE_INT_ARGB).let { targetImage ->
                         targetImage.createGraphics().apply {
                             paint = bgColor
                             fillRect(0, 0, desiredWidth, desiredHeight)
+
+                            if (imageBackgroundFill > 0) {
+                                withComposite(
+                                    AlphaComposite.getInstance(
+                                        AlphaComposite.SRC_OVER,
+                                        imageBackgroundFill
+                                    )
+                                ) {
+                                    drawImage(
+                                        image,
+                                        AffineTransform(
+                                            scaleFactor,
+                                            0f,
+                                            0f,
+                                            scaleFactor,
+                                            0f,
+                                            0f
+                                        ),
+                                        null
+                                    )
+                                }
+                            }
+
                             drawImage(
                                 image,
                                 //No scaling, just draw the image at x/y coordinates
-                                AffineTransform(1f, 0f, 0f, 1f, xOffset.toFloat(), yOffset.toFloat()),
+                                AffineTransform(
+                                    1f,
+                                    0f,
+                                    0f,
+                                    1f,
+                                    xOffset,
+                                    yOffset
+                                ),
                                 null
                             )
                         }
