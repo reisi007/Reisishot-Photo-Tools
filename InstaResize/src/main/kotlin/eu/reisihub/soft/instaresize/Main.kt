@@ -13,7 +13,9 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.Executors
+import kotlin.math.ceil
 import kotlin.math.max
+import kotlin.math.roundToInt
 import kotlin.streams.toList
 
 object Main {
@@ -25,7 +27,7 @@ object Main {
             "-s",
             help = "Source folder for images. Looking for a folder, whch contains JPG images",
             argName = "SOURCE_FOLDER"
-        ) { Paths.get(this)!! }.addValidator {
+        ) { Paths.get(this) }.addValidator {
             Files.list(value)
                 .filter { it.fileName.toString().let { it.endsWith("jpg", true) || it.endsWith("jpeg", true) } }
                 .findAny().ifAbsent {
@@ -78,11 +80,11 @@ object Main {
     }
 
 
-    val executorService =
+    private val executorService =
         Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
 
 
-    val instagramSupportedRatios = AspectRatio(4, 5)..AspectRatio(191, 100)
+    private val instagramSupportedRatios = AspectRatio(4, 5)..AspectRatio(191, 100)
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -164,7 +166,7 @@ object Main {
                     imageRatio < targetAspectRatio -> {
                         (imageRatio.heightAspect.toDouble() / targetAspectRatio.heightAspect * targetAspectRatio.widthAspect).let { proposedWidthAspect ->
                             val desiredWidth =
-                                Math.round(Math.ceil(proposedWidthAspect)).toInt() //Width is larger than before!
+                                ceil(proposedWidthAspect).roundToInt() //Width is larger than before!
                             desiredWidth to imageRatio.heightAspect
                         }
 
@@ -190,7 +192,12 @@ object Main {
                     BufferedImage(desiredWidth, desiredHeight, BufferedImage.TYPE_INT_ARGB).let { targetImage ->
                         targetImage.createGraphics().apply {
                             paint = bgColor
-                            fillRect(0, 0, desiredWidth, desiredHeight)
+                            fillRect(
+                                0,
+                                0,
+                                desiredWidth,
+                                desiredHeight
+                            )
 
                             if (imageBackgroundFill > 0) {
                                 withComposite(
@@ -206,8 +213,8 @@ object Main {
                                             0f,
                                             0f,
                                             scaleFactor,
-                                            0f,
-                                            0f
+                                            -desiredWidth * (scaleFactor - widthScaleFactor) / 2,
+                                            -desiredHeight * (scaleFactor - heightScaleFactor) / 2
                                         ),
                                         null
                                     )
