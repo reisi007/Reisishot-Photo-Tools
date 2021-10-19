@@ -2,7 +2,7 @@
   <configuration default="false" name="InstaResize" type="JetRunConfigurationType" singleton="true">
     <option name="MAIN_CLASS_NAME" value="eu.reisihub.soft.instaresize.Main" />
     <module name="Reisishot_Photo_Tools.InstaResize.main" />
-    <option name="PROGRAM_PARAMETERS" value="--src &quot;C:\Users\flori\Desktop\in&quot; --out &quot;C:\Users\flori\Desktop\out&quot; -c WHITE -f 0.5" />
+    <option name="PROGRAM_PARAMETERS" value="--src &quot;C:\Users\flori\Desktop\in&quot; --out &quot;C:\Users\flori\Desktop\out&quot; -c WHITE -f 0.5 -r 1:1" />
     <shortenClasspath name="NONE" />
     <option name="VM_PARAMETERS" value="-ea -Xmx16g" />
     <method v="2">

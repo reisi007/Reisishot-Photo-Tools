@@ -1,15 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Create Watermark settings:" type="JetRunConfigurationType" factoryName="Kotlin" singleton="true">
-    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+  <configuration default="false" name="Create Watermark settings:" type="JetRunConfigurationType" singleton="true">
     <option name="MAIN_CLASS_NAME" value="eu.reisihub.soft.watermarking.SettingsCreatorKt" />
-    <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="" />
-    <option name="WORKING_DIRECTORY" value="" />
-    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-    <option name="ALTERNATIVE_JRE_PATH" />
-    <option name="PASS_PARENT_ENVS" value="true" />
-    <module name="Watermarking_main" />
-    <envs />
-    <method />
+    <module name="Reisishot_Photo_Tools.Watermarking.main" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
   </configuration>
 </component>

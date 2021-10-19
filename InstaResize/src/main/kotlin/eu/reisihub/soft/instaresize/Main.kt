@@ -16,7 +16,6 @@ import java.util.concurrent.Executors
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
-import kotlin.streams.toList
 
 object Main {
 
@@ -77,6 +76,17 @@ object Main {
                 else -> toFloat
             }
         }
+
+        val targetAspectRatio: AspectRatio? by argParser.storing(
+            "-r",
+            "--ratio",
+            help = "Ratio W:H, which overrides the computed target aspect ratio",
+            argName = "ASPECT_RATIO"
+        ) {
+            val (width, height) = split(":", limit = 2)
+                .map { it.toInt() }
+            AspectRatio(width, height)
+        }.default(null)
     }
 
 
@@ -90,41 +100,39 @@ object Main {
     fun main(args: Array<String>) {
         try {
             CommandLineArgs(ArgParser(args)).run {
-                Files.list(srcFolder).filter {
-                    Files.isRegularFile(it) &&
-                            it.fileName.toString().let { it.endsWith("jpg", true) || it.endsWith("jpeg", true) }
-                }.sorted().toList().let { files ->
-                    if (files.isEmpty())
-                        throw IllegalStateException("No files to process!")
-                    println("Loading initial image!")
-                    files.first().readImage().aspectRatio.let {
-                        if (it in instagramSupportedRatios)
-                            it
-                        else
-                            findNextSupportedRatio(it)
-                    }.let { finalRatio ->
-                        println("Final ratio found: $finalRatio!")
-                        println("Creating batch jobs!")
-                        if (!Files.exists(targetFolder))
-                            Files.createDirectories(targetFolder)
-                        files.map {
-                            it to executorService.submit(
-                                getResizeJob(
-                                    it,
-                                    targetFolder,
-                                    finalRatio,
-                                    color,
-                                    imageBackgroundFill
-                                )
-                            )
-                        }
-                            .asSequence().map { (sourcePath, targetPathFuture) ->
-                                targetPathFuture.get().also { println("Converted image $sourcePath. Stored at $it") }
-                            }.count().let { totalImages ->
-                                println("Finished converting $totalImages images!")
-                            }
-                    }
+                val files = listImageFiles()
+
+                println("Loading initial image!")
+
+                val finalRatio =
+                    targetAspectRatio
+                        ?.also { println("Taking aspect ratio $it from command line") }
+                        ?: files.first().loadRatioFromFile()
+
+                println("Creating batch jobs!")
+
+                if (!Files.exists(targetFolder))
+                    Files.createDirectories(targetFolder)
+
+                val imageCount = files.map {
+                    it to executorService.submit(
+                        getResizeJob(
+                            it,
+                            targetFolder,
+                            finalRatio,
+                            color,
+                            imageBackgroundFill
+                        )
+                    )
                 }
+                    .asSequence()
+                    .map { (sourcePath, targetPathFuture) ->
+                        targetPathFuture.get().also { println("Converted image $sourcePath. Stored at $it") }
+                    }
+                    .count()
+
+                println("Finished converting $imageCount images!")
+
             }
         } catch (e: ShowHelpException) {
             val help = StringWriter().apply { e.printUserMessage(this, "InstaResize CLI", 120) }.toString()
@@ -137,6 +145,33 @@ object Main {
                     throw IllegalStateException("Unexpected batch jobs pending!")
             }
         }
+    }
+
+    private fun CommandLineArgs.listImageFiles(): List<Path> {
+        val files = Files.list(srcFolder)
+            .filter {
+                Files.isRegularFile(it) &&
+                        it.fileName.toString().let { fileName ->
+                            fileName.endsWith("jpg", true) ||
+                                    fileName.endsWith("jpeg", true)
+                        }
+            }
+            .sorted()
+            .toList()
+
+        if (files.isEmpty())
+            throw IllegalStateException("No files to process!")
+        return files
+    }
+
+    private fun Path.loadRatioFromFile(): AspectRatio {
+        val loadedRatio = readImage().aspectRatio
+        val aspectRatio = if (loadedRatio in instagramSupportedRatios)
+            loadedRatio
+        else
+            findNextSupportedRatio(loadedRatio)
+        println("Final ratio found: $aspectRatio!")
+        return aspectRatio
     }
 
     private fun findNextSupportedRatio(sourceRatio: AspectRatio): AspectRatio = when {
@@ -159,88 +194,92 @@ object Main {
         bgColor: Color,
         imageBackgroundFill: Float
     ): () -> Path = {
-        fromImage.readImage().let { image ->
-            image.aspectRatio.let { imageRatio ->
-                when {
-                    // increase width
-                    imageRatio < targetAspectRatio -> {
-                        (imageRatio.heightAspect.toDouble() / targetAspectRatio.heightAspect * targetAspectRatio.widthAspect).let { proposedWidthAspect ->
-                            val desiredWidth =
-                                ceil(proposedWidthAspect).roundToInt() //Width is larger than before!
-                            desiredWidth to imageRatio.heightAspect
-                        }
+        val image = fromImage.readImage()
+        val aspectRatio = image.aspectRatio
+        val (desiredWidth, desiredHeight) = computeImageRatio(aspectRatio, targetAspectRatio)
 
-                    }
-                    // increase height
-                    imageRatio > targetAspectRatio -> {
-                        (imageRatio.widthAspect.toDouble() / targetAspectRatio.widthAspect * targetAspectRatio.heightAspect).let { proposedHeightAspect ->
-                            val desiredHeight =
-                                Math.round(Math.ceil(proposedHeightAspect)).toInt() //Height is larger than before!
-                            imageRatio.widthAspect to desiredHeight
-                        }
-                    }
-                    else -> imageRatio.widthAspect to imageRatio.heightAspect
-                }.let { (desiredWidth, desiredHeight) ->
-                    //Desired values are >= current values
-                    val xOffset = (desiredWidth - imageRatio.widthAspect) / 2.toFloat()
-                    val yOffset = (desiredHeight - imageRatio.heightAspect) / 2.toFloat()
+        //Desired values are >= current values
+        val xOffset = (desiredWidth - aspectRatio.widthAspect) / 2.toFloat()
+        val yOffset = (desiredHeight - aspectRatio.heightAspect) / 2.toFloat()
 
-                    val widthScaleFactor = desiredWidth / imageRatio.widthAspect.toFloat()
-                    val heightScaleFactor = desiredHeight / imageRatio.heightAspect.toFloat()
-                    val scaleFactor = max(widthScaleFactor, heightScaleFactor)
+        val widthScaleFactor = desiredWidth / aspectRatio.widthAspect.toFloat()
+        val heightScaleFactor = desiredHeight / aspectRatio.heightAspect.toFloat()
+        val scaleFactor = max(widthScaleFactor, heightScaleFactor)
 
-                    BufferedImage(desiredWidth, desiredHeight, BufferedImage.TYPE_INT_ARGB).let { targetImage ->
-                        targetImage.createGraphics().apply {
-                            paint = bgColor
-                            fillRect(
-                                0,
-                                0,
-                                desiredWidth,
-                                desiredHeight
-                            )
+        val targetImage = BufferedImage(desiredWidth, desiredHeight, BufferedImage.TYPE_INT_ARGB)
 
-                            if (imageBackgroundFill > 0) {
-                                withComposite(
-                                    AlphaComposite.getInstance(
-                                        AlphaComposite.SRC_OVER,
-                                        imageBackgroundFill
-                                    )
-                                ) {
-                                    drawImage(
-                                        image,
-                                        AffineTransform(
-                                            scaleFactor,
-                                            0f,
-                                            0f,
-                                            scaleFactor,
-                                            -desiredWidth * (scaleFactor - widthScaleFactor) / 2,
-                                            -desiredHeight * (scaleFactor - heightScaleFactor) / 2
-                                        ),
-                                        null
-                                    )
-                                }
-                            }
+        with(targetImage.createGraphics()) {
+            paint = bgColor
+            fillRect(
+                0,
+                0,
+                desiredWidth,
+                desiredHeight
+            )
 
-                            drawImage(
-                                image,
-                                //No scaling, just draw the image at x/y coordinates
-                                AffineTransform(
-                                    1f,
-                                    0f,
-                                    0f,
-                                    1f,
-                                    xOffset,
-                                    yOffset
-                                ),
-                                null
-                            )
-                        }
-                        toFolder.resolve(fromImage.fileName).also { outFileName ->
-                            targetImage.storeJPG(outFileName)
-                        }
-                    }
+            if (imageBackgroundFill > 0) {
+                withComposite(
+                    AlphaComposite.getInstance(
+                        AlphaComposite.SRC_OVER,
+                        imageBackgroundFill
+                    )
+                ) {
+                    drawImage(
+                        image,
+                        AffineTransform(
+                            scaleFactor,
+                            0f,
+                            0f,
+                            scaleFactor,
+                            -desiredWidth * (scaleFactor - widthScaleFactor) / 2,
+                            -desiredHeight * (scaleFactor - heightScaleFactor) / 2
+                        ),
+                        null
+                    )
                 }
             }
+
+            drawImage(
+                image,
+                //No scaling, just draw the image at x/y coordinates
+                AffineTransform(
+                    1f,
+                    0f,
+                    0f,
+                    1f,
+                    xOffset,
+                    yOffset
+                ),
+                null
+            )
         }
+
+        val outFileName = toFolder.resolve(fromImage.fileName)
+        targetImage.storeJPG(outFileName)
+        outFileName
+    }
+
+    private fun computeImageRatio(
+        imageRatio: AspectRatio,
+        targetAspectRatio: AspectRatio
+    ) = when {
+        // increase width
+        imageRatio < targetAspectRatio -> {
+            (imageRatio.heightAspect.toDouble() / targetAspectRatio.heightAspect * targetAspectRatio.widthAspect).let { proposedWidthAspect ->
+                val desiredWidth =
+                    ceil(proposedWidthAspect).roundToInt() //Width is larger than before!
+                desiredWidth to imageRatio.heightAspect
+            }
+
+        }
+        // increase height
+        imageRatio > targetAspectRatio -> {
+            (imageRatio.widthAspect.toDouble() / targetAspectRatio.widthAspect * targetAspectRatio.heightAspect).let { proposedHeightAspect ->
+                val desiredHeight =
+                    Math.round(Math.ceil(proposedHeightAspect)).toInt() //Height is larger than before!
+                imageRatio.widthAspect to desiredHeight
+            }
+        }
+        else -> imageRatio.widthAspect to imageRatio.heightAspect
     }
 }
