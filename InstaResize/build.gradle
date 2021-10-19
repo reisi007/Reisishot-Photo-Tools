@@ -1,14 +1,10 @@
 plugins {
-    id 'kotlin'
     id 'application'
 }
 
 group 'eu.reisihub.soft.photoTools'
 version '1.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
-}
 
 mainClassName = 'eu.reisihub.soft.instaresize.Main'
 
@@ -16,11 +12,4 @@ dependencies {
     api project(':base')
 
     implementation 'com.xenomachina:kotlin-argparser:2.0.7'
-}
-
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
 }

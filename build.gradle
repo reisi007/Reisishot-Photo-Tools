@@ -1,28 +1,41 @@
-buildscript {
-    ext.kotlin_version = '1.5.21'
-
-    repositories {
-        mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0"
-    }
-
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.0.0"
+    id 'org.jetbrains.kotlin.jvm' version "1.5.31"
+    id "com.github.johnrengelman.shadow" version "7.1.0"
 }
 
 group 'eu.reisihub.soft.photoTools'
 version '1.0-SNAPSHOT'
 
+repositories {
+    mavenCentral()
+}
+
 subprojects {
     apply plugin: "com.github.johnrengelman.shadow"
+    apply plugin: 'org.jetbrains.kotlin.jvm'
+
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = "16"
+            useIR = true
+        }
+    }
+
+    compileTestKotlin {
+        kotlinOptions {
+            jvmTarget = "16"
+            useIR = true
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        // https://kotlinlang.org/releases.html#release-details
+        def kotlin_version = '1.5.30'
+
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    }
 }
