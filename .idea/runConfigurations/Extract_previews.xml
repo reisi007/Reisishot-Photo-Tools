@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Extract previews" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="pictures.reisishot.previews.extract.Main" />
+    <module name="Reisishot_Photo_Tools.ExtractPreviews.main" />
+    <option name="PROGRAM_PARAMETERS" value="-s &quot;D:\Pictures\2022\05\20&quot; -t &quot;C:\Users\flori\Desktop\testitest&quot;" />
+    <shortenClasspath name="NONE" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../phototools" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

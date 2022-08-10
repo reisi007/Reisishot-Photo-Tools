@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version "1.5.31"
+    id 'org.jetbrains.kotlin.jvm' version "1.7.10"
     id "com.github.johnrengelman.shadow" version "7.1.0"
 }
 
@@ -16,15 +16,13 @@ subprojects {
 
     compileKotlin {
         kotlinOptions {
-            jvmTarget = "16"
-            useIR = true
+            jvmTarget = "17"
         }
     }
 
     compileTestKotlin {
         kotlinOptions {
-            jvmTarget = "16"
-            useIR = true
+            jvmTarget = "17"
         }
     }
 
@@ -34,7 +32,7 @@ subprojects {
 
     dependencies {
         // https://kotlinlang.org/releases.html#release-details
-        def kotlin_version = '1.5.30'
+        def kotlin_version = '1.7.10'
 
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     }

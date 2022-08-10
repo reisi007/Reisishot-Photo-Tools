@@ -1,0 +1,15 @@
+plugins {
+    id 'application'
+}
+
+group 'eu.reisihub.soft.photoTools'
+version '1.0-SNAPSHOT'
+
+
+mainClassName = 'pictures.reisishot.previews.extract.Main'
+
+dependencies {
+    api project(':base')
+
+    implementation 'com.xenomachina:kotlin-argparser:2.0.7'
+}
