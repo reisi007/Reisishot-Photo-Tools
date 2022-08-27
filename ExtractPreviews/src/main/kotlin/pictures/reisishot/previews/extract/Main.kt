@@ -1,13 +1,16 @@
 package pictures.reisishot.previews.extract
 
-import com.xenomachina.argparser.*
-import eu.reisihub.shot.ifAbsent
+import com.xenomachina.argparser.ArgParser
+import com.xenomachina.argparser.MissingValueException
+import com.xenomachina.argparser.ShowHelpException
+import com.xenomachina.argparser.default
 import eu.reisihub.shot.withChild
 import java.io.StringWriter
-import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
+import kotlin.io.path.Path
+import kotlin.io.path.writeText
 
 object Main {
 
@@ -18,13 +21,7 @@ object Main {
             "-s",
             help = "Source folder for images. Looking for a folder, whch contains JPG images",
             argName = "SOURCE_FOLDER"
-        ) { Paths.get(this) }.addValidator {
-            Files.list(value)
-                .filter { it.fileName.toString().let { it.endsWith("jpg", true) || it.endsWith("jpeg", true) } }
-                .findAny().ifAbsent {
-                    throw SystemExitException("Folder $value does not contain JPG files...", -1)
-                }
-        }
+        ) { Paths.get(this) }
 
         val targetFolder: Path by argParser.storing(
             "-o",
@@ -45,9 +42,12 @@ object Main {
     fun main(args: Array<String>) {
         try {
             CommandLineArgs(ArgParser(args)).let { (src, internalTarget) ->
-                val target = internalTarget withChild UUID.randomUUID().toString()
+                val uuid = UUID.randomUUID().toString()
+                val target = internalTarget withChild uuid
                 createExtractImageJob(src, target, ImageType.PreviewImage).forEach { it() }
                 createExtractImageJob(src, target withChild "thumbnails", ImageType.ThumbnailImage).forEach { it() }
+                // save a file with the folder as content with the uuid as filename
+                (Path("./created") withChild uuid).writeText(src.toString())
             }
         } catch (e: ShowHelpException) {
             val help = StringWriter().apply { e.printUserMessage(this, "InstaResize CLI", 120) }.toString()
