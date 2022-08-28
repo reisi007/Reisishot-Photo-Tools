@@ -1,0 +1,18 @@
+plugins {
+    id 'application'
+}
+
+group 'eu.reisihub.soft.photoTools'
+version '1.0-SNAPSHOT'
+
+
+mainClassName = 'eu.reisihub.soft.sync.Main'
+
+dependencies {
+    api project(':base')
+
+    implementation 'org.jetbrains.exposed:exposed-jdbc:0.39.2'
+    // https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client
+    implementation("org.mariadb.jdbc:mariadb-java-client:3.0.7")
+
+}
