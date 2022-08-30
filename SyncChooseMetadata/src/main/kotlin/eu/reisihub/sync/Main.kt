@@ -7,45 +7,42 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.nio.file.Paths
 import java.util.*
 
 object Main {
     @JvmStatic
-    fun main(args: Array<String>) = Properties().apply {
-        (args.firstOrNull() ?: throw IllegalStateException("Need property filename..."))
-            .let { Main::class.java.classLoader.getResource("$it.properties") }
-            ?.openStream()
-            ?.use { load(it) }
-            ?: throw IllegalStateException("Property file not found...")
-    }
-        .useDbConnection {
-            val foldersToSync = WaitlistPictureAccess.slice(WaitlistPictureAccess.folder)
-                .selectAll()
-                .withDistinct()
-                .map { it[WaitlistPictureAccess.folder] }
-                .toSortedSet()
-            runBlocking {
-                println("Sync results")
-                println()
-                foldersToSync.map {
-                    it to async { syncRatingsAndComments(it) }
-                }.map { (folder, syncJob) -> folder to syncJob.await() }
-                    .forEach { (id, status) ->
-                        print("$id ➔ ")
-                        println(
-                            when (status) {
-                                is SyncStatus.Error -> status.message
-                                SyncStatus.Success -> "Success"
-                            }
-                        )
-                    }
-            }
+    fun main(args: Array<String>) {
+        val (propertyFilename, metadataFolderString) = args
+        val metadataFolder = Paths.get(metadataFolderString)
+        Properties().apply {
+            propertyFilename
+                .let { Main::class.java.classLoader.getResourceAsStream("$it.properties") }
+                ?.use { load(it) }
+                ?: throw IllegalStateException("Property file not found...")
         }
-}
-
-private suspend fun Transaction.syncRatingsAndComments(folderId: String): SyncStatus {
-    // TODO perform sync
-    return SyncStatus.Success
+            .useDbConnection {
+                val foldersToSync = WaitlistPictureAccess.slice(WaitlistPictureAccess.folder)
+                    .selectAll()
+                    .withDistinct()
+                    .map { it[WaitlistPictureAccess.folder] }
+                    .toSortedSet()
+                runBlocking {
+                    println("Sync results")
+                    println()
+                    foldersToSync.map {
+                        it to async {
+                            syncRatingsAndComments(metadataFolder, it)
+                        }
+                    }.map { (folder, syncJob) -> folder to syncJob.await() }
+                        .forEach { (id, status) ->
+                            print("$id ➔ ")
+                            val errors = status.mapNotNull { it as? SyncStatus.Error }
+                            println(if (errors.isEmpty()) "Success" else errors.toString())
+                        }
+                }
+            }
+    }
 }
 
 fun Properties.useDbConnection(action: Transaction.() -> Unit) {
