@@ -11,8 +11,14 @@ mainClassName = 'eu.reisihub.soft.sync.Main'
 dependencies {
     api project(':base')
 
-    implementation 'org.jetbrains.exposed:exposed-jdbc:0.39.2'
+    // https://mvnrepository.com/artifact/org.jetbrains.exposed/exposed-core
+    implementation 'org.jetbrains.exposed:exposed-core:0.39.2'
+    // https://mvnrepository.com/artifact/org.jetbrains.exposed/exposed-jdbc
+    runtimeOnly 'org.jetbrains.exposed:exposed-jdbc:0.39.2'
     // https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client
-    implementation("org.mariadb.jdbc:mariadb-java-client:3.0.7")
+    runtimeOnly("org.mariadb.jdbc:mariadb-java-client:3.0.7")
+    // https://mvnrepository.com/artifact/com.adobe.xmp/xmpcore
+    implementation 'com.adobe.xmp:xmpcore:6.1.11'
+
 
 }
