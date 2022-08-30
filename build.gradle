@@ -13,6 +13,14 @@ repositories {
 subprojects {
     apply plugin: "com.github.johnrengelman.shadow"
     apply plugin: 'org.jetbrains.kotlin.jvm'
+    apply plugin: 'idea'
+
+    idea {
+        module {
+            downloadJavadoc = true
+            downloadSources = true
+        }
+    }
 
     compileKotlin {
         kotlinOptions {

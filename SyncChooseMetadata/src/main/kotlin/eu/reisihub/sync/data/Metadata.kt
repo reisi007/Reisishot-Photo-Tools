@@ -1,11 +1,10 @@
 package eu.reisihub.sync.data
 
 import java.math.BigDecimal
-import kotlin.math.roundToInt
 
 
 class Metadata(private val comments: Map<Person, String>, private val ratings: Map<Person, BigDecimal>) {
-    private val avgRating = (ratings.values.sumOf { it } / BigDecimal(ratings.size)).toDouble().roundToInt()
+    val avgRating by lazy { (ratings.values.sumOf { it } / BigDecimal(ratings.size)).toDouble() }
 
     override fun toString(): String {
         return buildString {
@@ -17,4 +16,28 @@ class Metadata(private val comments: Map<Person, String>, private val ratings: M
             }
         }
     }
+
+    fun buildComment(): String = buildString {
+        append(" == ").append("Ratings (").append(avgRating).append(") == ")
+        appendLine()
+        ratings.forEach { (person, value) ->
+            append(" - ")
+            append(person)
+            append(": ")
+            append(value)
+            appendLine()
+        }
+        if (comments.isNotEmpty()) {
+            appendLine()
+            append(" == ").append("Comments").append(" == ")
+            appendLine()
+            appendLine()
+            comments.forEach { (person, value) ->
+                append(" = ").append(person).append(" = ").appendLine()
+                appendLine(value)
+                appendLine()
+            }
+        }
+    }
 }
+
